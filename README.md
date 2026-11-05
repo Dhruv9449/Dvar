@@ -74,12 +74,16 @@ opens without a profile rather than making Chrome create a new empty one.
 
 ### macOS permission
 
-Chrome's profile list lives in Chrome's own data folder, which macOS protects.
-The first time Chrome Router reads it, macOS asks to let it "access data from
-other apps": click Allow. The list is cached in
-`~/.config/chrome-router/`, so the CLI works even from terminals that don't
-have that permission. Because the app is ad-hoc signed, a rebuild may make
-macOS ask again.
+Chrome's profile list lives in Chrome's own data folder, which macOS protects
+from other apps, and it does not reliably prompt for it. Give **Chrome Router**
+Full Disk Access (System Settings → Privacy & Security → Full Disk Access; the
+settings window has a button for it), then click Retry in the window. It only
+needs to succeed once: the list is cached in `~/.config/chrome-router/`, so the
+CLI works even from terminals without that permission.
+
+The build pins the ad-hoc signature to the bundle id, so the grant survives
+rebuilds. Prefer no extra access? Use profile directories in rules instead
+(`Profile 1`; find it at `chrome://version` → Profile Path in that profile).
 
 ### Rule fields
 
