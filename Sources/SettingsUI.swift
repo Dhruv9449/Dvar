@@ -310,8 +310,28 @@ struct SettingsView: View {
                         }
                         Spacer()
                     }
-                    if let err = model.profileError {
-                        Text(err).font(.caption).foregroundStyle(.red)
+                    if model.profileError != nil {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label("macOS is blocking Chrome Router from reading Chrome's profile list, so rules can't pick a profile.",
+                                  systemImage: "lock.fill")
+                                .foregroundStyle(.red)
+                            Text("Turn on Chrome Router under Privacy & Security → Full Disk Access (use + and pick it from ~/Applications if it isn't listed), then click Retry. It only needs to succeed once; the list is cached afterwards.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            HStack {
+                                Button("Open Full Disk Access") {
+                                    NSWorkspace.shared.open(URL(string:
+                                        "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")!)
+                                }
+                                Button("Show app in Finder") {
+                                    NSWorkspace.shared.activateFileViewerSelecting([Bundle.main.bundleURL])
+                                }
+                                Button("Retry") { model.loadProfiles() }
+                            }
+                        }
+                        .padding(8)
+                        .background(Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
                     }
                 }
                 .padding(6)

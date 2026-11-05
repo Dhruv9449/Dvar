@@ -1,5 +1,6 @@
 APP_NAME   := Chrome Router
 BIN        := chrome-router
+BUNDLE_ID  := com.dhruv9449.chrome-router
 BUILD      := build
 APP        := $(BUILD)/$(APP_NAME).app
 PREFIX     ?= $(HOME)/Applications
@@ -20,7 +21,9 @@ app: $(BUILD)/$(BIN) Resources/Info.plist
 	@mkdir -p "$(APP)/Contents/MacOS"
 	cp Resources/Info.plist "$(APP)/Contents/Info.plist"
 	cp $(BUILD)/$(BIN) "$(APP)/Contents/MacOS/$(BIN)"
-	codesign --force --sign - "$(APP)"
+	@# Ad-hoc signatures default to a cdhash requirement, so macOS privacy grants
+	@# (access to Chrome's data) would reset on every rebuild. Pin it to the bundle id.
+	codesign --force --sign - -r='designated => identifier "$(BUNDLE_ID)"' "$(APP)"
 
 install: app
 	@mkdir -p "$(PREFIX)" "$(BIN_DIR)"

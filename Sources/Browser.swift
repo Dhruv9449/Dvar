@@ -71,7 +71,7 @@ struct Browser {
                let cached = try? JSONDecoder().decode([Profile].self, from: data) {
                 return cached
             }
-            throw RouterError("\(error). Open Chrome Router (chrome-router ui) and allow access to Chrome's data when macOS asks")
+            throw RouterError("\(error) Grant Chrome Router Full Disk Access (chrome-router ui shows how).")
         }
     }
 

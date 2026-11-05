@@ -40,7 +40,9 @@ enum Router {
         let decision = Matcher.decide(config, url: url, source: source) { notes.append($0) }
         let dir = decision.profile.flatMap { browser.resolveDirectory($0).directory }
         if let p = decision.profile, dir == nil {
-            notes.append("profile \"\(p)\" not found, opened without a profile")
+            var why = "not found"
+            do { _ = try browser.profiles() } catch { why = "unresolved: \(error)" }
+            notes.append("profile \"\(p)\" \(why); opened without a profile")
         }
         let via = decision.ruleIndex.map { "rule #\($0 + 1)" } ?? "default"
 
