@@ -52,5 +52,14 @@ expect "bad regex rejected"       "error"              "$BIN" add '(' Work --reg
 expect "unknown browser"          "unknown browser"    "$BIN" browser netscape
 expect "brave alias"              "com.brave.Browser"  "$BIN" browser brave
 
+expect "version"                  "0."                 "$BIN" --version
+expect "unknown command"          "unknown command"    "$BIN" frobnicate
+expect "unknown option"           "unknown option"     "$BIN" test x.com --nope
+expect "remove with no rules"     "no rules yet"       env DVAR_CONFIG="$TMP/empty.json" "$BIN" remove 1
+expect "init writes config"       "Wrote"              env DVAR_CONFIG="$TMP/init.json" "$BIN" init
+expect "init refuses overwrite"   "already exists"     env DVAR_CONFIG="$TMP/init.json" "$BIN" init
+cp "$HERE/../config.example.json" "$TMP/example.json"
+expect "example config parses"    "via rule #3"        env DVAR_CONFIG="$TMP/example.json" "$BIN" test https://meet.google.com/x --from Slack
+
 echo "$pass passed, $fail failed"
 [[ $fail -eq 0 ]]
