@@ -1,0 +1,5 @@
+{"profile": {"info_cache": {
+  "Default":   {"name": "Personal", "user_name": "me@gmail.com"},
+  "Profile 1": {"name": "Work", "user_name": "me@company.com"},
+  "Profile 2": {"name": "Side Project", "user_name": ""}
+}}}
