@@ -7,7 +7,8 @@
 </p>
 
 <p align="center">
-<a href="https://www.swift.org/"><img src="https://img.shields.io/badge/built%20with-Swift-orange.svg" alt="built with Swift" /></a>
+<a href="https://github.com/Dhruv9449/Dvar/actions/workflows/ci.yml"><img src="https://github.com/Dhruv9449/Dvar/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+<a href="https://www.swift.org/"><img src="https://img.shields.io/badge/built%20with-Swift%206-orange.svg" alt="built with Swift" /></a>
 <a href="https://www.apple.com/macos/"><img src="https://img.shields.io/badge/platform-macOS%2013%2B-blueviolet.svg" alt="macOS 13+" /></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
 </p>
@@ -34,6 +35,7 @@ Click a GitHub link in Slack and it opens in your Work profile. Click a YouTube 
   - [Config file](#config-file)
 - [How it works](#how-it-works)
 - [Development](#development)
+  - [Project structure](#project-structure)
 - [Uninstalling](#uninstalling)
 - [License](#license)
 - [Developer](#developer)
@@ -189,6 +191,8 @@ dvar test https://github.com/mycompany/api/pull/42
 | `dvar open <url>` | Route and open a URL now |
 | `dvar edit` | Open the config in `$EDITOR` |
 | `dvar status` | Paths, browser, and whether Dvar is the default browser |
+| `dvar set-default-browser` | Make Dvar the system default browser |
+| `dvar version` | Print the version |
 
 <br>
 
@@ -241,6 +245,33 @@ Every routed link is logged to `~/Library/Logs/dvar.log`, which is the first pla
 make build   # build/dvar
 make test    # CLI tests against a fake config and Chrome profile list
 make app     # build/Dvar.app
+```
+
+Dvar builds with `swiftc` in Swift 6 language mode; there is no Xcode project. The CLI tests run against a throwaway config and a fake Chrome profile list (`DVAR_CONFIG` and `DVAR_LOCAL_STATE`), so they never touch your real setup.
+
+<br>
+
+### Project structure
+
+```
+Sources/
+├── Entry.swift                    Starts the app or the CLI
+├── Core/
+│   ├── Config.swift               Config file and rules
+│   ├── Matcher.swift              Picks the rule for a URL
+│   ├── Browser.swift              Supported browsers, profiles, launching
+│   ├── Router.swift               Decides, opens and logs each link
+│   ├── DefaultBrowser.swift       Reads and sets the system default browser
+│   ├── Log.swift                  ~/Library/Logs/dvar.log
+│   └── Dvar.swift                 Version, bundle id, file paths, errors
+├── App/
+│   ├── AppDelegate.swift          Receives links from macOS
+│   ├── SettingsModel.swift        State behind the settings window
+│   ├── SettingsView.swift         SwiftUI settings window
+│   └── SettingsWindowController.swift
+└── CLI/
+    ├── CLI.swift                  dvar commands
+    └── Arguments.swift            Argument parsing
 ```
 
 <br>
