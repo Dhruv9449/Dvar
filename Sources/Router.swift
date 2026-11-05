@@ -52,8 +52,12 @@ enum Router {
 }
 
 /// Background (LSUIElement) app that receives http/https links once set as the
-/// default browser. Stays running so subsequent clicks are instant.
+/// default browser. Stays running so subsequent clicks are instant. Opening the
+/// app yourself (Finder, Spotlight, `chrome-router ui`) shows the settings window.
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    let settings = SettingsWindowController()
+
     func applicationWillFinishLaunching(_ notification: Notification) {
         NSAppleEventManager.shared().setEventHandler(
             self,
@@ -61,6 +65,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             forEventClass: AEEventClass(kInternetEventClass),
             andEventID: AEEventID(kAEGetURL))
     }
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // false when macOS launched us to open a link or file.
+        let isDefaultLaunch = notification.userInfo?[NSApplication.launchIsDefaultUserInfoKey] as? Bool ?? true
+        if isDefaultLaunch { settings.show() }
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        settings.show()
+        return false
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 
     @objc func handleGetURL(_ event: NSAppleEventDescriptor, withReply reply: NSAppleEventDescriptor) {
         guard let s = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
@@ -79,11 +96,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+@MainActor
 func runApp() -> Never {
     let app = NSApplication.shared
     let delegate = AppDelegate()
     app.delegate = delegate
-    app.setActivationPolicy(.prohibited)
+    app.setActivationPolicy(.accessory)
     app.run()
     exit(0)
 }

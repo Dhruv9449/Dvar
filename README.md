@@ -5,26 +5,41 @@ Click a GitHub link in Slack and it opens in your Work profile, click a YouTube
 link in Mail and it opens in Personal.
 
 - One ~200 KB native binary, no dependencies, no Electron, no menu bar icon.
-- Rules live in a small JSON file and are managed from the CLI.
+- Rules live in a small JSON file. Edit them in a settings window or from the CLI.
 - Match on domain, path, a regex, or the app the link was clicked in.
 - Works with Chrome, Chrome Beta/Dev/Canary, Chromium, Brave and Edge.
 
 ## Install
 
-Needs macOS 12+ and the Xcode command line tools (`xcode-select --install`).
+Needs macOS 13+ and the Xcode command line tools (`xcode-select --install`).
 
 ```sh
 git clone https://github.com/Dhruv9449/chrome-router.git
 cd chrome-router
 make install                    # → ~/Applications/Chrome Router.app + ~/.local/bin/chrome-router
-chrome-router init              # writes ~/.config/chrome-router/config.json
-chrome-router set-default-browser   # macOS asks you to confirm
+chrome-router ui                # add rules, then click "Make default"
 ```
 
 If `~/.local/bin` isn't on your `PATH`, add it, or install the CLI elsewhere with
 `make install BIN_DIR=/usr/local/bin`.
 
 ## Configure
+
+### Settings window
+
+Open **Chrome Router** from Spotlight or Finder, or run `chrome-router ui`. The
+window lets you:
+
+- pick the browser and the profile for links no rule matches
+- add, edit, delete and drag-reorder rules, choosing the profile from a menu of
+  your real profiles and the "from" app from a menu of running apps
+- try a URL and see live which profile it would open in (before saving)
+- make Chrome Router the default browser
+
+Invalid rules (empty pattern, bad regex) are flagged inline and block saving.
+Closing the window leaves the app running in the background with no Dock icon.
+
+### CLI
 
 ```sh
 chrome-router profiles
@@ -75,7 +90,8 @@ See [config.example.json](config.example.json).
 ## How it works
 
 `Chrome Router.app` is a background app (no Dock icon) registered for `http`
-and `https`. When macOS hands it a link, it reloads the config, picks a
+and `https`. Launching it yourself shows the settings window; launches caused
+by a link click don't. When macOS hands it a link, it reloads the config, picks a
 profile, and starts the browser with `--profile-directory=<dir> <url>`. If the
 browser is already running, that hands the URL to the existing window and
 exits. The clicking app is read from the sender of the open-URL Apple Event.

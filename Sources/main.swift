@@ -5,6 +5,6 @@ import Foundation
 // script, is the CLI.
 let args = CommandLine.arguments.dropFirst().filter { !$0.hasPrefix("-psn_") }
 if args.isEmpty && getppid() == 1 {
-    runApp()
+    MainActor.assumeIsolated { runApp() }
 }
 exit(CLI.run(Array(args)))

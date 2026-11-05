@@ -7,6 +7,7 @@ enum CLI {
     chrome-router: open links in the right Chrome profile.
 
     Usage:
+      chrome-router ui                           Open the settings window
       chrome-router profiles                     List the browser's profiles
       chrome-router init                         Create a starter config
       chrome-router rules                        List rules in match order
@@ -52,6 +53,7 @@ enum CLI {
             case "edit": try edit()
             case "status": try status()
             case "set-default-browser": try setDefaultBrowser()
+            case "ui", "settings": try openUI()
             default: throw RouterError("unknown command \"\(cmd)\" (see chrome-router help)")
             }
             return 0
@@ -135,14 +137,11 @@ enum CLI {
         }
         let browser = try Browser.from(Config())
         let list = (try? browser.profiles()) ?? []
-        var config = Config(defaultProfile: list.first?.name)
-        if list.count > 1 {
-            config.rules = [Rule(match: "*.example-work.com", profile: list[1].name)]
-        }
+        let config = Config(defaultProfile: list.first?.name)
         try config.save()
         print("wrote \(Config.path.path)")
         if !list.isEmpty { print(""); try profiles() }
-        print("\nNext: chrome-router add <pattern> <profile>, then chrome-router set-default-browser")
+        print("\nNext: chrome-router ui (or chrome-router add <pattern> <profile>), then chrome-router set-default-browser")
     }
 
     static func rules() throws {
@@ -276,6 +275,18 @@ enum CLI {
         print("app:             \(installed?.path ?? "not registered (run make install)")")
         print("default browser: \(handlerID)\(handlerID == bundleID ? " ✓" : " (run chrome-router set-default-browser)")")
         print("log:             \(Log.path.path)")
+    }
+
+    static func openUI() throws {
+        guard NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) != nil else {
+            throw RouterError("Chrome Router.app is not registered; run make install first")
+        }
+        // `open` sends a reopen event to a running instance, which shows the window.
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+        p.arguments = ["-b", bundleID]
+        try p.run()
+        p.waitUntilExit()
     }
 
     static func setDefaultBrowser() throws {
