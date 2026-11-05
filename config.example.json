@@ -1,0 +1,11 @@
+{
+  "browser": "chrome",
+  "default": "Personal",
+  "rules": [
+    { "match": "*.mycompany.com", "profile": "Work" },
+    { "match": "github.com/mycompany", "profile": "Work" },
+    { "match": "meet.google.com", "from": "Slack", "profile": "Work" },
+    { "regex": "^https://docs\\.google\\.com/.*/d/1AbC", "profile": "work@mycompany.com" },
+    { "from": "com.tinyspeck.slackmacgap", "profile": "Work" }
+  ]
+}
