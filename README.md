@@ -67,8 +67,19 @@ Rules are checked top to bottom and the first match wins. Use `move` to reorder,
 `remove` to delete, `edit` to open the JSON in `$EDITOR`. Changes apply to the
 next click; nothing needs restarting.
 
-A profile can be named by its display name, its signed-in email, or its
-directory (`Default`, `Profile 1`, ...).
+A profile can be named by its display name, its signed-in email, `@domain`
+(any profile whose email is on that domain, e.g. `@mycompany.com`), or its
+directory (`Default`, `Profile 1`, ...). If a name can't be resolved, the link
+opens without a profile rather than making Chrome create a new empty one.
+
+### macOS permission
+
+Chrome's profile list lives in Chrome's own data folder, which macOS protects.
+The first time Chrome Router reads it, macOS asks to let it "access data from
+other apps": click Allow. The list is cached in
+`~/.config/chrome-router/`, so the CLI works even from terminals that don't
+have that permission. Because the app is ad-hoc signed, a rebuild may make
+macOS ask again.
 
 ### Rule fields
 

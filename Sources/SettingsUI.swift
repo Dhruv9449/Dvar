@@ -416,6 +416,8 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     }
 
     func windowDidBecomeKey(_ notification: Notification) {
+        // Pick up edits made from the CLI or by hand, unless there are unsaved changes here.
+        if let model, !model.isDirty { model.reload() }
         model?.refreshDefaultBrowser()
     }
 
