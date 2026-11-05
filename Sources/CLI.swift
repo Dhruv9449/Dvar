@@ -106,8 +106,12 @@ enum CLI {
 
     static func describe(_ profile: String, in browser: Browser) -> String {
         let (dir, p) = browser.resolveDirectory(profile)
-        guard let p else { return "\(profile) (not found in \(browser.bundleID) profiles, passed as directory)" }
-        return "\(p.name) [\(dir)\(p.email.map { ", \($0)" } ?? "")]"
+        guard let p else {
+            return dir == nil
+                ? "\(profile) (NOT FOUND, links would open without a profile)"
+                : "\(profile) (not in known profiles, passed as directory)"
+        }
+        return "\(p.name) [\(p.directory)\(p.email.map { ", \($0)" } ?? "")]"
     }
 
     static func warnIfUnknown(_ profile: String, _ browser: Browser) {

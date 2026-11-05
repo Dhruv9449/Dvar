@@ -32,17 +32,21 @@ enum Matcher {
         while pattern.hasSuffix("/") { pattern.removeLast() }
         guard !pattern.isEmpty else { return false }
 
+        // Host and path are matched separately so a "*" in the host part can never
+        // swallow a slash ("*.example.com/x" must not match "evil.com/a.example.com/x").
+        let slash = pattern.firstIndex(of: "/")
+        let hostPattern = String(pattern[..<(slash ?? pattern.endIndex)])
         let host = (url.host ?? "").lowercased()
         // "*.example.com" should also cover the apex "example.com".
-        let variants = pattern.hasPrefix("*.") ? [pattern, String(pattern.dropFirst(2))] : [pattern]
+        let hostVariants = hostPattern.hasPrefix("*.") ? [hostPattern, String(hostPattern.dropFirst(2))] : [hostPattern]
+        guard hostVariants.contains(where: { glob($0, host) }) else { return false }
+        guard let slash else { return true }
 
-        if !pattern.contains("/") {
-            return variants.contains { glob($0, host) }
-        }
-
-        var target = host + url.path
+        // "github.com/org" covers "/org", "/org/...", and "/org?..." but not "/org-fork".
+        let pathPattern = String(pattern[slash...])
+        var target = url.path.isEmpty ? "/" : url.path
         if let q = url.query, !q.isEmpty { target += "?" + q }
-        return variants.contains { glob($0, target) || glob($0 + "/*", target) || glob($0 + "\\?*", target) }
+        return glob(pathPattern, target) || glob(pathPattern + "/*", target) || glob(pathPattern + "\\?*", target)
     }
 
     static func matches(_ rule: Rule, url: URL, source: SourceApp?) throws -> Bool {

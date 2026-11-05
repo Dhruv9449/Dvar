@@ -77,7 +77,7 @@ struct Config: Codable, Equatable {
 
     func save() throws {
         let enc = JSONEncoder()
-        enc.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+        enc.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
         let data = try enc.encode(self)
         try FileManager.default.createDirectory(
             at: Config.path.deletingLastPathComponent(), withIntermediateDirectories: true)

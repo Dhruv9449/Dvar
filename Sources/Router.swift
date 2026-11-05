@@ -38,7 +38,10 @@ enum Router {
         let browser = (try? Browser.from(config)) ?? (try! Browser.from(Config()))
 
         let decision = Matcher.decide(config, url: url, source: source) { notes.append($0) }
-        let dir = decision.profile.map { browser.resolveDirectory($0).directory }
+        let dir = decision.profile.flatMap { browser.resolveDirectory($0).directory }
+        if let p = decision.profile, dir == nil {
+            notes.append("profile \"\(p)\" not found, opened without a profile")
+        }
         let via = decision.ruleIndex.map { "rule #\($0 + 1)" } ?? "default"
 
         browser.open(url, profileDirectory: dir) { error in

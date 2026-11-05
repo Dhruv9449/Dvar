@@ -1,13 +1,19 @@
 import AppKit
 
-struct Profile {
+struct Profile: Codable {
     let directory: String
     let name: String
     let email: String?
 
+    /// Directory name, display name, full email, or "@domain" for any email on that domain.
     func matches(_ query: String) -> Bool {
         let q = query.lowercased()
+        if q.hasPrefix("@"), let e = email?.lowercased() { return e.hasSuffix(q) }
         return directory.lowercased() == q || name.lowercased() == q || email?.lowercased() == q
+    }
+
+    static func looksLikeDirectory(_ s: String) -> Bool {
+        s == "Default" || s.range(of: #"^Profile \d+$"#, options: .regularExpression) != nil
     }
 }
 
@@ -45,7 +51,31 @@ struct Browser {
             .appendingPathComponent("Local State")
     }
 
+    /// Last successfully read profile list. macOS guards other apps' data, so a
+    /// process that hasn't been granted access (e.g. a terminal) falls back to this.
+    var cachePath: URL {
+        Config.path.deletingLastPathComponent().appendingPathComponent("profiles-\(bundleID).json")
+    }
+
     func profiles() throws -> [Profile] {
+        do {
+            let list = try readLocalState()
+            if let data = try? JSONEncoder().encode(list) {
+                try? FileManager.default.createDirectory(
+                    at: cachePath.deletingLastPathComponent(), withIntermediateDirectories: true)
+                try? data.write(to: cachePath, options: .atomic)
+            }
+            return list
+        } catch {
+            if let data = try? Data(contentsOf: cachePath),
+               let cached = try? JSONDecoder().decode([Profile].self, from: data) {
+                return cached
+            }
+            throw RouterError("\(error). Open Chrome Router (chrome-router ui) and allow access to Chrome's data when macOS asks")
+        }
+    }
+
+    private func readLocalState() throws -> [Profile] {
         let data: Data
         do {
             data = try Data(contentsOf: localStatePath)
@@ -68,12 +98,14 @@ struct Browser {
     }
 
     /// Maps a profile string from the config to Chrome's profile directory.
-    /// Unknown names are passed through as a directory so Chrome can still try.
-    func resolveDirectory(_ query: String) -> (directory: String, profile: Profile?) {
+    /// An unresolvable name is passed through only if it looks like a directory
+    /// ("Profile 3"); otherwise nil, because Chrome would silently create a new,
+    /// empty profile for an unknown --profile-directory.
+    func resolveDirectory(_ query: String) -> (directory: String?, profile: Profile?) {
         if let list = try? profiles(), let p = list.first(where: { $0.matches(query) }) {
             return (p.directory, p)
         }
-        return (query, nil)
+        return (Profile.looksLikeDirectory(query) ? query : nil, nil)
     }
 
     var appURL: URL? { NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) }

@@ -20,7 +20,7 @@ expect "profiles lists names"     "Side Project"       "$BIN" profiles
 expect "no config → browser default" "last-used profile" "$BIN" test https://example.com
 
 "$BIN" default Personal >/dev/null
-"$BIN" add '*.company.com' Work >/dev/null
+"$BIN" add '*.company.com' '@company.com' >/dev/null
 "$BIN" add 'github.com/company-org' 'me@company.com' >/dev/null
 "$BIN" add '^https://docs\.google\.com/.*/d/side-' 'Profile 2' --regex >/dev/null
 "$BIN" add Work --from Slack >/dev/null
@@ -32,6 +32,8 @@ expect "lookalike domain"         "Personal [Default"  "$BIN" test https://evilc
 expect "path prefix"              "Work [Profile 1"    "$BIN" test https://github.com/company-org/repo/pull/1
 expect "path prefix exact"        "Work [Profile 1"    "$BIN" test github.com/company-org
 expect "path prefix not sibling"  "Personal [Default"  "$BIN" test https://github.com/company-org-fork
+expect "* in host can't eat slashes" "via default"     "$BIN" test https://evil.com/a.company.com/x
+expect "@domain profile"          "Work [Profile 1"    "$BIN" test https://ci.company.com --from nobody
 expect "path prefix + query"     "Work [Profile 1"    "$BIN" test "https://github.com/company-org?tab=repos"
 expect "other github → default"   "via default"        "$BIN" test https://github.com/torvalds/linux
 expect "regex"                    "Side Project"       "$BIN" test 'https://docs.google.com/document/d/side-abc/edit'
@@ -39,6 +41,9 @@ expect "from app by name"         "via rule #5"        "$BIN" test https://rando
 expect "from + match by bundle id" "via rule #1"       "$BIN" test https://notion.so/x --from com.tinyspeck.slackmacgap
 expect "match without from fails"  "via default"       "$BIN" test https://notion.so
 expect "rules listing"            "5. from Slack"      "$BIN" rules
+"$BIN" add 'ghost.example' 'no-such@nowhere.com' >/dev/null
+expect "unresolvable profile flagged" "NOT FOUND"      "$BIN" test https://ghost.example
+"$BIN" remove 6 >/dev/null
 expect "unknown profile warns"    "warning: no profile" "$BIN" add x.com Nope
 "$BIN" remove 6 >/dev/null
 expect "move"                     "1. match *.company.com" "$BIN" move 2 1
