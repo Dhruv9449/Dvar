@@ -5,8 +5,8 @@ BIN="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-export CHROME_ROUTER_CONFIG="$TMP/config.json"
-export CHROME_ROUTER_LOCAL_STATE="$HERE/local-state.json"
+export DVAR_CONFIG="$TMP/config.json"
+export DVAR_LOCAL_STATE="$HERE/local-state.json"
 
 pass=0; fail=0
 expect() { # expect <description> <needle> <cmd...>

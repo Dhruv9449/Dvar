@@ -1,6 +1,6 @@
-APP_NAME   := Chrome Router
-BIN        := chrome-router
-BUNDLE_ID  := com.dhruv9449.chrome-router
+APP_NAME   := Dvar
+BIN        := dvar
+BUNDLE_ID  := com.dhruv9449.dvar
 BUILD      := build
 APP        := $(BUILD)/$(APP_NAME).app
 PREFIX     ?= $(HOME)/Applications
@@ -16,10 +16,11 @@ $(BUILD)/$(BIN): $(SOURCES)
 	@mkdir -p $(BUILD)
 	swiftc -O -framework AppKit -o $@ $(SOURCES)
 
-app: $(BUILD)/$(BIN) Resources/Info.plist
+app: $(BUILD)/$(BIN) Resources/Info.plist Resources/AppIcon.icns
 	@rm -rf "$(APP)"
-	@mkdir -p "$(APP)/Contents/MacOS"
+	@mkdir -p "$(APP)/Contents/MacOS" "$(APP)/Contents/Resources"
 	cp Resources/Info.plist "$(APP)/Contents/Info.plist"
+	cp Resources/AppIcon.icns "$(APP)/Contents/Resources/AppIcon.icns"
 	cp $(BUILD)/$(BIN) "$(APP)/Contents/MacOS/$(BIN)"
 	@# Ad-hoc signatures default to a cdhash requirement, so macOS privacy grants
 	@# (access to Chrome's data) would reset on every rebuild. Pin it to the bundle id.
@@ -35,7 +36,7 @@ install: app
 	@echo
 	@echo "Installed $(PREFIX)/$(APP_NAME).app and $(BIN_DIR)/$(BIN)"
 	@case ":$$PATH:" in *":$(BIN_DIR):"*) ;; *) echo "Note: add $(BIN_DIR) to your PATH";; esac
-	@echo "Next: $(BIN) init && $(BIN) set-default-browser"
+	@echo "Next: $(BIN) ui  (add rules, then click Make default)"
 
 uninstall:
 	@pkill -x $(BIN) 2>/dev/null || true

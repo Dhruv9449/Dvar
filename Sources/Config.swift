@@ -55,11 +55,11 @@ struct Config: Codable, Equatable {
     }
 
     static var path: URL {
-        if let override = ProcessInfo.processInfo.environment["CHROME_ROUTER_CONFIG"], !override.isEmpty {
+        if let override = ProcessInfo.processInfo.environment["DVAR_CONFIG"], !override.isEmpty {
             return URL(fileURLWithPath: (override as NSString).expandingTildeInPath)
         }
         return FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent(".config/chrome-router/config.json")
+            .appendingPathComponent(".config/dvar/config.json")
     }
 
     static var exists: Bool { FileManager.default.fileExists(atPath: path.path) }
