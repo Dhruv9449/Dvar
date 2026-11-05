@@ -3,7 +3,7 @@
 	<img src="assets/wordmark.png" alt="Dvar" height=200/>
 </a>
 	<h2 align="center"> Dvar 🚪</h2>
-	<h4 align="center"> द्वार, Sanskrit for "doorway". A tiny macOS default browser that opens every link in the right Chrome profile. </h4>
+	<h4 align="center"> A tiny macOS default browser that opens every link in the right Chrome profile. </h4>
 </p>
 
 <p align="center">

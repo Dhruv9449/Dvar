@@ -4,7 +4,7 @@ enum CLI {
     static let bundleID = "com.dhruv9449.dvar"
 
     static let usage = """
-    dvar (द्वार, "doorway"): open each link in the right Chrome profile.
+    dvar: open each link in the right Chrome profile.
 
     Usage:
       dvar ui                         Open the settings window
