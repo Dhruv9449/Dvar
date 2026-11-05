@@ -3,13 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleIdentifier</key>
-	<string>com.dhruv9449.chrome-router</string>
+	<string>com.dhruv9449.dvar</string>
 	<key>CFBundleName</key>
-	<string>Chrome Router</string>
+	<string>Dvar</string>
 	<key>CFBundleDisplayName</key>
-	<string>Chrome Router</string>
+	<string>Dvar</string>
 	<key>CFBundleExecutable</key>
-	<string>chrome-router</string>
+	<string>dvar</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

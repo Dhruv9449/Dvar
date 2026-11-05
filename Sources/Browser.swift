@@ -42,7 +42,7 @@ struct Browser {
     }
 
     var localStatePath: URL {
-        if let override = ProcessInfo.processInfo.environment["CHROME_ROUTER_LOCAL_STATE"], !override.isEmpty {
+        if let override = ProcessInfo.processInfo.environment["DVAR_LOCAL_STATE"], !override.isEmpty {
             return URL(fileURLWithPath: (override as NSString).expandingTildeInPath)
         }
         return FileManager.default.homeDirectoryForCurrentUser
@@ -71,7 +71,7 @@ struct Browser {
                let cached = try? JSONDecoder().decode([Profile].self, from: data) {
                 return cached
             }
-            throw RouterError("\(error) Grant Chrome Router Full Disk Access (chrome-router ui shows how).")
+            throw RouterError("\(error) Grant Dvar Full Disk Access (dvar ui shows how).")
         }
     }
 

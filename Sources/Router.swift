@@ -2,7 +2,7 @@ import AppKit
 
 enum Log {
     static var path: URL {
-        FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/chrome-router.log")
+        FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/dvar.log")
     }
 
     static func write(_ line: String) {
@@ -58,7 +58,7 @@ enum Router {
 
 /// Background (LSUIElement) app that receives http/https links once set as the
 /// default browser. Stays running so subsequent clicks are instant. Opening the
-/// app yourself (Finder, Spotlight, `chrome-router ui`) shows the settings window.
+/// app yourself (Finder, Spotlight, `dvar ui`) shows the settings window.
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let settings = SettingsWindowController()

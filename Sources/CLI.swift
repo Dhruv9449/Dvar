@@ -1,33 +1,33 @@
 import AppKit
 
 enum CLI {
-    static let bundleID = "com.dhruv9449.chrome-router"
+    static let bundleID = "com.dhruv9449.dvar"
 
     static let usage = """
-    chrome-router: open links in the right Chrome profile.
+    dvar (द्वार, "doorway"): open each link in the right Chrome profile.
 
     Usage:
-      chrome-router ui                           Open the settings window
-      chrome-router profiles                     List the browser's profiles
-      chrome-router init                         Create a starter config
-      chrome-router rules                        List rules in match order
-      chrome-router add <pattern> <profile>      Add a rule (glob on host or host/path)
-            [--regex]                            Treat <pattern> as a regex on the full URL
-            [--from <app>]                       Only for links clicked in this app (name or bundle id);
-                                                 with --from, <pattern> may be omitted
-            [--at <n>]                           Insert at position n (default: end)
-      chrome-router remove <n>                   Remove rule n
-      chrome-router move <n> <m>                 Move rule n to position m
-      chrome-router default <profile>|--clear    Profile for links no rule matches
-      chrome-router browser <name>               chrome | chrome-beta | chrome-dev | chrome-canary |
-                                                 chromium | brave | edge
-      chrome-router test <url> [--from <app>]    Show which profile a URL would open in
-      chrome-router open <url> [--from <app>]    Route and open a URL now
-      chrome-router edit                         Open the config file in $EDITOR
-      chrome-router status                       Paths, browser, and default-browser check
-      chrome-router set-default-browser          Make Chrome Router the system default browser
+      dvar ui                         Open the settings window
+      dvar profiles                   List the browser's profiles
+      dvar init                       Create a starter config
+      dvar rules                      List rules in match order
+      dvar add <pattern> <profile>    Add a rule (glob on host or host/path)
+          [--regex]                   Treat <pattern> as a regex on the full URL
+          [--from <app>]              Only links clicked in this app (name or bundle id);
+                                      with --from, <pattern> may be omitted
+          [--at <n>]                  Insert at position n (default: end)
+      dvar remove <n>                 Remove rule n
+      dvar move <n> <m>               Move rule n to position m
+      dvar default <profile>|--clear  Profile for links no rule matches
+      dvar browser <name>             chrome | chrome-beta | chrome-dev | chrome-canary |
+                                      chromium | brave | edge
+      dvar test <url> [--from <app>]  Show which profile a URL would open in
+      dvar open <url> [--from <app>]  Route and open a URL now
+      dvar edit                       Open the config file in $EDITOR
+      dvar status                     Paths, browser, and default-browser check
+      dvar set-default-browser        Make Dvar the system default browser
 
-    Profiles can be given by display name ("Work"), email, or directory ("Profile 1").
+    Profiles can be a display name ("Work"), an email, "@domain", or a directory ("Profile 1").
     Config: \(Config.path.path)
     """
 
@@ -54,7 +54,7 @@ enum CLI {
             case "status": try status()
             case "set-default-browser": try setDefaultBrowser()
             case "ui", "settings": try openUI()
-            default: throw RouterError("unknown command \"\(cmd)\" (see chrome-router help)")
+            default: throw RouterError("unknown command \"\(cmd)\" (see dvar help)")
             }
             return 0
         } catch {
@@ -145,13 +145,13 @@ enum CLI {
         try config.save()
         print("wrote \(Config.path.path)")
         if !list.isEmpty { print(""); try profiles() }
-        print("\nNext: chrome-router ui (or chrome-router add <pattern> <profile>), then chrome-router set-default-browser")
+        print("\nNext: dvar ui (or dvar add <pattern> <profile>), then dvar set-default-browser")
     }
 
     static func rules() throws {
         let config = try Config.load()
         let browser = try Browser.from(config)
-        if config.rules.isEmpty { print("no rules yet (chrome-router add <pattern> <profile>)") }
+        if config.rules.isEmpty { print("no rules yet (dvar add <pattern> <profile>)") }
         for (i, r) in config.rules.enumerated() {
             print("\(String(i + 1).leftPad(3)). \(r.summary)  →  \(describe(r.profile, in: browser))")
         }
@@ -165,7 +165,7 @@ enum CLI {
         switch pos.count {
         case 2: rule = Rule(match: pos[0], profile: pos[1])
         case 1 where opt["--from"] != nil: rule = Rule(profile: pos[0])
-        default: throw RouterError("usage: chrome-router add <pattern> <profile> [--regex] [--from <app>] [--at <n>]")
+        default: throw RouterError("usage: dvar add <pattern> <profile> [--regex] [--from <app>] [--at <n>]")
         }
         if opt["--regex"] != nil {
             guard let p = rule.match else { throw RouterError("--regex needs a pattern") }
@@ -183,7 +183,7 @@ enum CLI {
 
     static func remove(_ args: [String]) throws {
         var config = try Config.load()
-        guard args.count == 1 else { throw RouterError("usage: chrome-router remove <n>") }
+        guard args.count == 1 else { throw RouterError("usage: dvar remove <n>") }
         let i = try index(args[0], count: config.rules.count)
         let r = config.rules.remove(at: i)
         try config.save()
@@ -192,7 +192,7 @@ enum CLI {
 
     static func move(_ args: [String]) throws {
         var config = try Config.load()
-        guard args.count == 2 else { throw RouterError("usage: chrome-router move <n> <m>") }
+        guard args.count == 2 else { throw RouterError("usage: dvar move <n> <m>") }
         let from = try index(args[0], count: config.rules.count)
         let to = try index(args[1], count: config.rules.count)
         let r = config.rules.remove(at: from)
@@ -203,7 +203,7 @@ enum CLI {
 
     static func setDefault(_ args: [String]) throws {
         var config = try Config.load()
-        guard args.count == 1 else { throw RouterError("usage: chrome-router default <profile>|--clear") }
+        guard args.count == 1 else { throw RouterError("usage: dvar default <profile>|--clear") }
         config.defaultProfile = args[0] == "--clear" ? nil : args[0]
         try config.save()
         if let p = config.defaultProfile { warnIfUnknown(p, try Browser.from(config)) }
@@ -212,7 +212,7 @@ enum CLI {
 
     static func setBrowser(_ args: [String]) throws {
         var config = try Config.load()
-        guard args.count == 1 else { throw RouterError("usage: chrome-router browser <name>") }
+        guard args.count == 1 else { throw RouterError("usage: dvar browser <name>") }
         config.browser = args[0]
         let b = try Browser.from(config)
         try config.save()
@@ -225,7 +225,7 @@ enum CLI {
 
     static func test(_ args: [String]) throws {
         let (pos, opt) = try parse(args, valued: ["--from"])
-        guard pos.count == 1 else { throw RouterError("usage: chrome-router test <url> [--from <app>]") }
+        guard pos.count == 1 else { throw RouterError("usage: dvar test <url> [--from <app>]") }
         let url = try parseURL(pos[0])
         let config = try Config.load()
         let browser = try Browser.from(config)
@@ -240,7 +240,7 @@ enum CLI {
 
     static func open(_ args: [String]) throws {
         let (pos, opt) = try parse(args, valued: ["--from"])
-        guard pos.count == 1 else { throw RouterError("usage: chrome-router open <url> [--from <app>]") }
+        guard pos.count == 1 else { throw RouterError("usage: dvar open <url> [--from <app>]") }
         let url = try parseURL(pos[0])
         let done = DispatchSemaphore(value: 0)
         Router.route(url, source: source(opt)) { line in
@@ -272,18 +272,18 @@ enum CLI {
         let handler = NSWorkspace.shared.urlForApplication(toOpen: URL(string: "https://example.com")!)
         let handlerID = handler.flatMap { Bundle(url: $0)?.bundleIdentifier } ?? "unknown"
         let installed = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)
-        print("config:          \(Config.path.path)\(Config.exists ? "" : " (missing, run chrome-router init)")")
+        print("config:          \(Config.path.path)\(Config.exists ? "" : " (missing, run dvar init)")")
         print("rules:           \(config.rules.count)")
         print("browser:         \(browser.bundleID)\(browser.appURL == nil ? " (NOT INSTALLED)" : "")")
         print("profiles from:   \(browser.localStatePath.path)")
         print("app:             \(installed?.path ?? "not registered (run make install)")")
-        print("default browser: \(handlerID)\(handlerID == bundleID ? " ✓" : " (run chrome-router set-default-browser)")")
+        print("default browser: \(handlerID)\(handlerID == bundleID ? " ✓" : " (run dvar set-default-browser)")")
         print("log:             \(Log.path.path)")
     }
 
     static func openUI() throws {
         guard NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) != nil else {
-            throw RouterError("Chrome Router.app is not registered; run make install first")
+            throw RouterError("Dvar.app is not registered; run make install first")
         }
         // `open` sends a reopen event to a running instance, which shows the window.
         let p = Process()
@@ -295,7 +295,7 @@ enum CLI {
 
     static func setDefaultBrowser() throws {
         guard let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else {
-            throw RouterError("Chrome Router.app is not registered; run make install first")
+            throw RouterError("Dvar.app is not registered; run make install first")
         }
         let group = DispatchGroup()
         var failure: Error?
@@ -308,7 +308,7 @@ enum CLI {
         }
         group.wait()
         if let failure { throw RouterError("macOS refused: \(failure.localizedDescription)") }
-        print("Chrome Router is now the default browser (macOS may have asked you to confirm).")
+        print("Dvar is now the default browser (macOS may have asked you to confirm).")
     }
 }
 

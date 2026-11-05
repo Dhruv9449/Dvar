@@ -300,10 +300,10 @@ struct SettingsView: View {
                     }
                     HStack {
                         if model.isDefaultBrowser {
-                            Label("Chrome Router is your default browser", systemImage: "checkmark.circle.fill")
+                            Label("Dvar is your default browser", systemImage: "checkmark.circle.fill")
                                 .foregroundStyle(.green)
                         } else {
-                            Label("Chrome Router is not your default browser, so links won't be routed",
+                            Label("Dvar is not your default browser, so links won't be routed",
                                   systemImage: "exclamationmark.triangle.fill")
                                 .foregroundStyle(.orange)
                             Button("Make default") { model.makeDefaultBrowser() }
@@ -312,10 +312,10 @@ struct SettingsView: View {
                     }
                     if model.profileError != nil {
                         VStack(alignment: .leading, spacing: 6) {
-                            Label("macOS is blocking Chrome Router from reading Chrome's profile list, so rules can't pick a profile.",
+                            Label("macOS is blocking Dvar from reading Chrome's profile list, so rules can't pick a profile.",
                                   systemImage: "lock.fill")
                                 .foregroundStyle(.red)
-                            Text("Turn on Chrome Router under Privacy & Security → Full Disk Access (use + and pick it from ~/Applications if it isn't listed), then click Retry. It only needs to succeed once; the list is cached afterwards.")
+                            Text("Turn on Dvar under Privacy & Security → Full Disk Access (use + and pick it from ~/Applications if it isn't listed), then click Retry. It only needs to succeed once; the list is cached afterwards.")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -418,11 +418,11 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
                 contentRect: NSRect(x: 0, y: 0, width: 960, height: 680),
                 styleMask: [.titled, .closable, .miniaturizable, .resizable],
                 backing: .buffered, defer: false)
-            w.title = "Chrome Router"
+            w.title = "Dvar"
             w.contentView = NSHostingView(rootView: SettingsView(model: model))
             w.isReleasedWhenClosed = false
             w.center()
-            w.setFrameAutosaveName("ChromeRouterSettings")
+            w.setFrameAutosaveName("DvarSettings")
             w.delegate = self
             window = w
             self.model = model
@@ -465,7 +465,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         let main = NSMenu()
         let appItem = NSMenuItem()
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "Quit Chrome Router", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Quit Dvar", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
         main.addItem(appItem)
 
