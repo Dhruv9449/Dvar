@@ -28,7 +28,7 @@ struct Rule: Codable, Equatable {
     }
 }
 
-struct Config: Codable {
+struct Config: Codable, Equatable {
     /// Bundle id or alias of the Chromium browser to launch. Defaults to Google Chrome.
     var browser: String?
     /// Profile for URLs that no rule matches. Unset → Chrome picks its last-used profile.
